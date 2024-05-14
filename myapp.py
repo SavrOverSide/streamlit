@@ -25,6 +25,11 @@ history = apple.history(period=period)
 
 # Отображение графика котировок
 st.line_chart(history)
+st.bar_chart(history)
+st.area_chart(history)
+st.scatter_chart(history)
+
+
 
 # Отображение информации о компании
 st.write(f"Название компании: {apple.info['longName']}")
@@ -61,10 +66,15 @@ with st.sidebar:
 # Загрузка CSV файла
 uploaded_file = st.file_uploader("Загрузите CSV файл", type="csv")
 if uploaded_file is not None:
-    df = pd.read_csv(uploaded_file)
+    # Кэширование функции загрузки и обработки CSV файла
+    @st.cache(allow_output_mutation=True)
+    def process_csv(file):
+        df = pd.read_csv(file)
+        return df
+
+    df = process_csv(uploaded_file)
     st.write(df)
     st.line_chart(df)
-
 
 # Функция для скачивания графика
 def download_graph():
